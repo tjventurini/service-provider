@@ -5,6 +5,7 @@ namespace Tjventurini\ServiceProvider;
 use ReflectionClass;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\ServiceProvider;
 
 class Package
 {
@@ -78,6 +79,17 @@ class Package
     ];
 
     /**
+     * Construct the package based on the service provider of the package to be set up.
+     *
+     * @param  Tjventurini\ServiceProvider\ServiceProvider $ServiceProvider
+     * @return void
+     */
+    public function __construct(ServiceProvider $ServiceProvider)
+    {
+        $this->service_provider = $ServiceProvider;
+    }
+
+    /**
      * Autodetect the available entities to be setup.
      *
      * @return void
@@ -119,7 +131,7 @@ class Package
     {
         // create an instance of the ReflectionClass in order
         //   to get the namespace of this package.
-        $ReflectionClass = new ReflectionClass(static::class);
+        $ReflectionClass = new ReflectionClass($this->service_provider);
 
         // return the ReflectionClass instance
         return $ReflectionClass;
@@ -241,9 +253,6 @@ class Package
      */
     private function configFileExists(): bool
     {
-        // get the package slug under which the configuration should be reachable
-        $slug = $this->getPackageSlug();
-
         // get the config path of this package
         $config_path = $this->getConfigPath();
 
