@@ -1,6 +1,6 @@
 <?php
 
-namespace Tjventurini\SimpleServiceProvider;
+namespace Tjventurini\ServiceProvider;
 
 use Illuminate\Support\Str;
 use Illuminate\Support\ServiceProvider;
@@ -157,7 +157,7 @@ class SimpleServiceProvider extends ServiceProvider
     private function setupServices()
     {
         // loop through the services of the package and set them up
-        collect($this->packages->getServices())->each(function ($config, $Service) {
+        collect($this->package->getServices())->each(function ($config, $Service) {
             $this->app->singleton(Str::slug($Service), function ($app) use ($Service, $config) {
                 // if the config is not null, pass it to the service
                 if ($config) {
