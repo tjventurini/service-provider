@@ -25,7 +25,7 @@ class SimpleServiceProvider extends ServiceProvider
         $this->registeringPackage();
 
         // setup a Package instance
-        $this->package = new Package();
+        $this->package = new Package($this);
 
         // configure the package
         $this->configurePackage($this->package);
@@ -80,7 +80,7 @@ class SimpleServiceProvider extends ServiceProvider
      * @param  Package $Package
      * @return void
      */
-    private function configurePackage(Package $Package): void
+    public function configurePackage(Package $Package): void
     {
         $Package->autodetect();
     }
@@ -293,7 +293,7 @@ class SimpleServiceProvider extends ServiceProvider
         $lighthouse_namespaces = collect(config('lighthouse.namespaces'));
         collect($namespaces)->each(function ($namespace, $type) use ($lighthouse_namespaces) {
             // stop if the type does not exist as key in the lighthouse configuration
-            if (!$lighthouse_namespaces->contains($type)) {
+            if (!$lighthouse_namespaces->keys()->contains($type)) {
                 return;
             }
 
@@ -301,7 +301,7 @@ class SimpleServiceProvider extends ServiceProvider
             config([
                 'lighthouse.namespaces.' . $type => array_merge(
                     (array) config('lighthouse.namespaces.' . $type),
-                    (array) $this->package->getEscapedPackageNamespace() . '\\\\' . $namespace
+                    (array) ($this->package->getEscapedPackageNamespace() . '\\\\' . $namespace)
                 )
             ]);
         });
