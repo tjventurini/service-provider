@@ -39,6 +39,9 @@ class SimpleServiceProvider extends ServiceProvider
         // setup the graphql namespaces and schema file
         //   of the package
         $this->setupGraphQL();
+
+        // call this method when the package has been registered
+        $this->packageRegistered();
     }
 
     /**
@@ -48,6 +51,9 @@ class SimpleServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        // call this method before the package gets booted
+        $this->bootingPackage();
+
         // setup the migrations of the package related
         // to the service provider instance.
         $this->setupMigrations();
@@ -63,6 +69,9 @@ class SimpleServiceProvider extends ServiceProvider
         // setup the translations of the package related
         // to the service provider instance.
         $this->setupTranslations();
+
+        // call this method when we are done booting the package
+        $this->packageBooted();
     }
 
     /**
