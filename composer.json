@@ -14,7 +14,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Tjventurini\\SimpleServiceProvider\\": "src"
+            "Tjventurini\\ServiceProvider\\": "src"
         }
     }
 }

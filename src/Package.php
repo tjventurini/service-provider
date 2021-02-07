@@ -1,6 +1,6 @@
 <?php
 
-namespace Tjventurini\SimpleServiceProvider;
+namespace Tjventurini\ServiceProvider;
 
 use ReflectionClass;
 use Illuminate\Support\Str;
@@ -149,7 +149,7 @@ class Package
         // if the package slug was set manually or
         // this method has been run already, just
         // return the package slug as available.
-        if ($this->package_slug) {
+        if (isset($this->package_slug)) {
             return $this->package_slug;
         }
 
