@@ -1,5 +1,7 @@
 # Service Provider (BETA)
 
+![logo](./logo.png)
+
 This package provides a the `SimpleServiceProvider` class that you can use to speed up your laravel package development.
 
 This package was not inspired but highly influenced by [spatie/lravel-package-tools](https://github.com/spatie/laravel-package-tools) 😉
