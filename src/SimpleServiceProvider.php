@@ -70,6 +70,9 @@ class SimpleServiceProvider extends ServiceProvider
         // to the service provider instance.
         $this->setupTranslations();
 
+        // setup the routes of this package
+        $this->setupRoutes();
+
         // call this method when we are done booting the package
         $this->packageBooted();
     }
@@ -227,6 +230,24 @@ class SimpleServiceProvider extends ServiceProvider
 
         // setup the lang
         $this->loadTranslationsFrom($translations_path, $slug);
+    }
+
+    /**
+     * Setup the routes of the given package.
+     *
+     * @return void
+     */
+    private function setupRoutes(): void
+    {
+        // if the package does not have routes, there is nothing to do
+        if (!$this->package->getHasRoutes()) {
+            return;
+        }
+
+        // load all route files of the package
+        collect($this->package->getRouteFiles())->each(function ($route_file) {
+            $this->loadRoutesFrom($route_file);
+        });
     }
 
     /**

@@ -6,6 +6,7 @@ use ReflectionClass;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 
 class Package
 {
@@ -79,6 +80,27 @@ class Package
     ];
 
     /**
+     * Does this package have a web routes file?
+     *
+     * @var bool
+     */
+    private bool $has_web_routes = false;
+
+    /**
+     * Does this package have a api routes file?
+     *
+     * @var bool
+     */
+    private bool $has_api_routes = false;
+
+    /**
+     * The route files of this package.
+     *
+     * @var array
+     */
+    private array $route_files = [];
+
+    /**
      * Construct the package based on the service provider of the package to be set up.
      *
      * @param  Tjventurini\ServiceProvider\ServiceProvider $ServiceProvider
@@ -119,6 +141,16 @@ class Package
         // should we setup a graphql schema file
         if ($this->graphQLSchemaFileExists()) {
             $this->hasGraphQLSchema();
+        }
+
+        // should we setup web routes
+        if ($this->webRoutesFileExists()) {
+            $this->hasWebRoutes();
+        }
+
+        // should we setup api routes
+        if ($this->apiRoutesFileExists()) {
+            $this->hasApiRoutes();
         }
     }
 
@@ -632,5 +664,171 @@ class Package
     public function getGraphQLNamespaces(): array
     {
         return $this->graphql_namespaces;
+    }
+
+    /**
+     * Call this method if your package has web routes.
+     *
+     * @return Package
+     */
+    public function hasWebRoutes(): self
+    {
+        // overwrite attribute
+        $this->has_web_routes = true;
+
+        // register the default web routes file
+        $this->registerRouteFile('routes/web.php');
+
+        // return current instance
+        return $this;
+    }
+
+    /**
+     * Returns true if we want to setup a web routes.
+     *
+     * @return bool
+     */
+    public function getHasWebRoutes(): bool
+    {
+        return !!$this->has_web_routes;
+    }
+
+    /**
+     * Returns true if there is web routes file under
+     * routes/web.php
+     *
+     * @return bool
+     */
+    private function webRoutesFileExists(): bool
+    {
+        // get the path the the graphql schema file
+        $web_routes_file_path = $this->getWebRoutesFilePath();
+
+        // stop if the file is not present
+        if (!File::exists($web_routes_file_path)) {
+            return false;
+        }
+
+        // return true if there is a graphql schema file
+        return true;
+    }
+
+    /**
+     * Get the path to the web routes file.
+     *
+     * @return string
+     */
+    public function getWebRoutesFilePath(): string
+    {
+        // build the path to the web routes file
+        $web_routes_file_path = $this->buildPath('routes/web.php');
+
+        // return the path that we build
+        return $web_routes_file_path;
+    }
+
+    /**
+     * Call this method if your package has api routes.
+     *
+     * @return Package
+     */
+    public function hasApiRoutes(): self
+    {
+        // overwrite attribute
+        $this->has_api_routes = true;
+
+        // register the default api routes file
+        $this->registerRouteFile('routes/api.php');
+
+        // return current instance
+        return $this;
+    }
+
+    /**
+     * Returns true if we want to setup a api routes.
+     *
+     * @return bool
+     */
+    public function getHasApiRoutes(): bool
+    {
+        return !!$this->has_api_routes;
+    }
+
+    /**
+     * Returns true if there is api routes file under
+     * routes/api.php
+     *
+     * @return bool
+     */
+    private function apiRoutesFileExists(): bool
+    {
+        // get the path the the graphql schema file
+        $api_routes_file_path = $this->getApiRoutesFilePath();
+
+        // stop if the file is not present
+        if (!File::exists($api_routes_file_path)) {
+            return false;
+        }
+
+        // return true if there is a graphql schema file
+        return true;
+    }
+
+    /**
+     * Get the path to the api routes file.
+     *
+     * @return string
+     */
+    public function getApiRoutesFilePath(): string
+    {
+        // build the path to the api routes file
+        $api_routes_file_path = $this->buildPath('routes/api.php');
+
+        // return the path that we build
+        return $api_routes_file_path;
+    }
+
+    /**
+     * Return true if there is at least one route file.
+     *
+     * @return bool
+     */
+    public function getHasRoutes(): bool
+    {
+        return !!count($this->route_files);
+    }
+
+    /**
+     * Register a given route file.
+     *
+     * @param  string                $route_file
+     * @return Package
+     * @throws FileNotFoundException
+     */
+    public function registerRouteFile(string $route_file): self
+    {
+        // build the full path
+        $full_path_to_the_route_file = $this->buildPath($route_file);
+
+        // throw an error if the file does not exist
+        if (!File::exists($full_path_to_the_route_file)) {
+            throw new FileNotFoundException($full_path_to_the_route_file . ' could not be found.');
+        }
+
+        // save the route file for to be registered
+        $this->route_files[] = $full_path_to_the_route_file;
+
+        // return current instance
+        return $this;
+    }
+
+    /**
+     * Return the array of route files that we want to register.
+     *
+     * @return array
+     */
+    public function getRouteFiles(): array
+    {
+        return $this->route_files;
     }
 }
