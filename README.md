@@ -25,6 +25,7 @@ In order to use it in a package you should add it as a dependency in your `compo
 * Can handle services
 * Can handle and autodetect graphql schema 
 * Can handle graphql namespaces
+* Can handle route files
 
 ## Usage
 
@@ -67,7 +68,10 @@ class YourPackageServiceProvider extends SimpleServiceProvider
                 'models' => 'Foo\\Bar'
             ])
             ->registerService(SomeService::class)
-            ->registerService(ServiceWithConfig::class, ['api_key' => 'some-key']);
+            ->registerService(ServiceWithConfig::class, ['api_key' => 'some-key'])
+            ->hasWebRoutes()
+            ->hasApiRoutes()
+            ->registerRouteFile('routes/admin.php');
     }
 }
 ```
@@ -76,7 +80,6 @@ For more information check out the [SimpleServiceProvider](src/SimpleServiceProv
 
 ## Roadmap 🛣
 
-* Handle routes (web and api)
 * Autodetect commands
 * Autodetect services
 * Autodetect graphql namespaces
